@@ -582,6 +582,103 @@
     }
     .btn-full-ghost:hover { border-color: var(--grey-dark); color: var(--black); }
 
+    /* ── Find Group Panel ── */
+    .find-group-toggle {
+      display: block;
+      text-align: center;
+      margin-top: 14px;
+      font-size: 16px;
+      color: var(--grey-dark);
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      font-family: 'Barlow', sans-serif;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .find-group-toggle:hover { color: var(--black); }
+    .find-group-toggle .toggle-link {
+      color: var(--accent-dim);
+      font-weight: 500;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .find-group-panel {
+      display: none;
+      margin-top: 14px;
+      background: var(--white);
+      border: 1.5px solid var(--grey-light);
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .find-group-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--grey-dark);
+      letter-spacing: 0.02em;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .find-group-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+    .find-group-input {
+      flex: 1;
+      padding: 11px 14px;
+      background: var(--bg);
+      border: 1.5px solid var(--grey-light);
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      color: var(--black);
+      text-transform: lowercase;
+      outline: none;
+      transition: border-color 0.15s;
+      min-width: 0;
+    }
+    .find-group-input::placeholder {
+      color: var(--grey-light);
+      font-weight: 400;
+      letter-spacing: 0.05em;
+    }
+    .find-group-input:focus { border-color: var(--accent-dim); }
+    .find-group-input.input-error { border-color: var(--error); }
+    .btn-find-go {
+      padding: 11px 18px;
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--black);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    .btn-find-go:hover { background: var(--accent-dim); }
+    .find-group-error {
+      display: none;
+      font-size: 13px;
+      color: var(--error);
+      margin-top: 7px;
+      line-height: 1.5;
+    }
+    .find-group-hint {
+      font-size: 13px;
+      color: var(--grey-mid);
+      margin-top: 7px;
+      line-height: 1.5;
+    }
+
     /* ── Footer ── */
     .lp-footer {
       padding: 24px 20px;
@@ -610,6 +707,32 @@
     <p class="hero-footnote">Built for doubles group play of 4–50 who play to improve.</p>
     <a href="https://forgepickle.github.io/app/?group=demo" class="btn-primary">▶ Try the demo</a>
     <button class="btn-ghost" onclick="scrollToSetup()">Start your group — free</button>
+
+    <button class="find-group-toggle" onclick="toggleFindGroup()" id="findGroupToggle">
+      Already in a group? <span class="toggle-link">Find it →</span>
+    </button>
+
+    <div class="find-group-panel" id="findGroupPanel">
+      <label class="find-group-label" for="inputGroupId">Enter your Group ID</label>
+      <div class="find-group-row">
+        <input
+          class="find-group-input"
+          type="text"
+          id="inputGroupId"
+          placeholder="xxxxxx"
+          maxlength="6"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="none"
+          spellcheck="false"
+          oninput="onGroupIdInput(this)"
+          onkeydown="if(event.key==='Enter') goToGroup()"
+        >
+        <button class="btn-find-go" onclick="goToGroup()">Go →</button>
+      </div>
+      <p class="find-group-error" id="findGroupError"></p>
+      <p class="find-group-hint" id="findGroupHint">6-character code — check the link your group admin shared with you.</p>
+    </div>
   </section>
 
   <!-- Section 2: Features -->
@@ -980,6 +1103,75 @@
   function copyGroupLink() { copyToClipboard(_groupUrl, 'copyLinkBtn', '✓ Copied!', '⎘ Copy group link'); }
   function copyGroupId()   { copyToClipboard(_groupId,  'copyIdBtn',   '✓ Copied',  'Copy'); }
   function openGroup()     { if (_groupUrl) window.open(_groupUrl, '_blank'); }
+
+  // ── Find Group ────────────────────────────────────────────────────────
+
+  // GroupID format: exactly 6 characters, base-36 (a–z, 0–9), lowercase.
+  // Mirrors the generation logic in RegistryCode.gs: generateUniqueGroupId_()
+  // which uses Math.random().toString(36).substr(2, 6).toLowerCase()
+  const GROUP_ID_RE = /^[a-z0-9]{6}$/;
+
+  function toggleFindGroup() {
+    const panel  = document.getElementById('findGroupPanel');
+    const toggle = document.getElementById('findGroupToggle');
+    const open   = panel.style.display === 'block';
+    panel.style.display = open ? 'none' : 'block';
+    if (!open) {
+      toggle.innerHTML = 'Already in a group? <span class="toggle-link">Hide ↑</span>';
+      document.getElementById('inputGroupId').focus();
+    } else {
+      toggle.innerHTML = 'Already in a group? <span class="toggle-link">Find it →</span>';
+      clearFindGroupError();
+    }
+  }
+
+  // Strips any character that is not a–z or 0–9, and forces lowercase.
+  // This runs on every keystroke so invalid characters are never accepted.
+  function onGroupIdInput(el) {
+    const raw     = el.value;
+    const cleaned = raw.replace(/[^a-z0-9]/gi, '').toLowerCase();
+    if (raw !== cleaned) el.value = cleaned;
+    clearFindGroupError();
+  }
+
+  function setFindGroupError(msg) {
+    const errEl   = document.getElementById('findGroupError');
+    const hintEl  = document.getElementById('findGroupHint');
+    const inputEl = document.getElementById('inputGroupId');
+    errEl.textContent   = msg;
+    errEl.style.display = 'block';
+    hintEl.style.display = 'none';
+    inputEl.classList.add('input-error');
+  }
+
+  function clearFindGroupError() {
+    const errEl   = document.getElementById('findGroupError');
+    const hintEl  = document.getElementById('findGroupHint');
+    const inputEl = document.getElementById('inputGroupId');
+    errEl.style.display  = 'none';
+    hintEl.style.display = 'block';
+    inputEl.classList.remove('input-error');
+  }
+
+  function goToGroup() {
+    const id = document.getElementById('inputGroupId').value.trim().toLowerCase();
+
+    if (!id) {
+      setFindGroupError('Please enter your Group ID.');
+      return;
+    }
+    if (id.length < 6) {
+      setFindGroupError('Group IDs are exactly 6 characters. Yours is ' + id.length + '.');
+      return;
+    }
+    if (!GROUP_ID_RE.test(id)) {
+      setFindGroupError('Group IDs contain only letters (a–z) and numbers (0–9). Check for typos.');
+      return;
+    }
+
+    // Valid — navigate to the group
+    window.location.href = 'https://forgepickle.github.io/app/?group=' + id;
+  }
 </script>
 </body>
 </html>
