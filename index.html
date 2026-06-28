@@ -2,11 +2,22 @@
 <!--
   ╔══════════════════════════════════════════════╗
   ║  FORGE — Landing + Registration Page         ║
-  ║  Version: 1.4.0                              ║
+  ║  Version: 2.0.0                              ║
   ║  Deploys to: forgepickle.github.io/          ║
   ║  (root GitHub Pages org site — separate      ║
   ║   repo from the app at /app/)                ║
   ║                                              ║
+  ║  v2.0.0 changes (copy only, no logic):       ║
+  ║  - Pain point moved to hero sub-headline     ║
+  ║  - Doubles-only disclosure added to hero     ║
+  ║  - "Free forever" pills moved above fold     ║
+  ║  - CTA text tightened; triangle removed      ║
+  ║  - "Already in a group?" always visible      ║
+  ║  - Feature cards: jargon replaced w/outcomes ║
+  ║  - Setup heading: "~15 min" → "15 minutes"  ║
+  ║  - Mobile warning softened; escape hatch     ║
+  ║  - Form label: "GAS" → plain English         ║
+  ║  - Register CTA: "Create my group →"         ║
   ╚══════════════════════════════════════════════╝
 -->
 <html lang="en">
@@ -118,13 +129,18 @@
       font-size: 16px;
       color: var(--grey-mid);
       line-height: 1.75;
-      margin-bottom: 8px;
+      margin-bottom: 14px;
     }
-    .hero-footnote {
+    .doubles-note {
       font-size: 14px;
       color: var(--grey-mid);
-      margin-bottom: 28px;
       font-style: italic;
+      margin-bottom: 28px;
+      padding: 9px 14px;
+      background: var(--white);
+      border: 1px solid var(--grey-light);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0;
     }
     .btn-primary {
       display: block;
@@ -165,6 +181,33 @@
       transition: border-color 0.15s, color 0.15s;
     }
     .btn-ghost:hover { border-color: var(--grey-dark); color: var(--black); }
+
+    /* ── Friction line + free pills ── */
+    .friction-line {
+      font-size: 14px;
+      color: var(--grey-mid);
+      text-align: center;
+      margin-top: 12px;
+      margin-bottom: 8px;
+    }
+    .free-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+      margin-bottom: 22px;
+    }
+    .free-pill {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-dim);
+      background: var(--accent-bg);
+      border: 1px solid var(--accent-border);
+      border-radius: 20px;
+      padding: 3px 10px;
+    }
 
     /* ── Section label ── */
     .section-label {
@@ -310,16 +353,6 @@
       font-size: 12px;
       color: var(--grey-dark);
     }
-    .gas-guide-placeholder {
-      background: var(--white);
-      border: 1.5px dashed var(--grey-light);
-      border-radius: 8px;
-      padding: 16px;
-      text-align: center;
-      font-size: 12px;
-      color: var(--grey-mid);
-      margin: 10px 0;
-    }
 
     /* ── Form divider ── */
     .form-divider {
@@ -369,6 +402,7 @@
       margin-top: 5px;
       line-height: 1.5;
     }
+
     /* ── Loading State ── */
     #loadingState { display: none; }
     .loading-card {
@@ -582,35 +616,24 @@
     }
     .btn-full-ghost:hover { border-color: var(--grey-dark); color: var(--black); }
 
-    /* ── Find Group Panel ── */
-    .find-group-toggle {
-      display: block;
-      text-align: center;
-      margin-top: 14px;
-      font-size: 16px;
-      color: var(--grey-dark);
-      cursor: pointer;
-      background: none;
-      border: none;
-      padding: 0;
-      font-family: 'Barlow', sans-serif;
-      text-decoration: none;
-      transition: color 0.15s;
-    }
-    .find-group-toggle:hover { color: var(--black); }
-    .find-group-toggle .toggle-link {
-      color: var(--accent-dim);
-      font-weight: 500;
-      text-decoration: underline;
-      text-underline-offset: 2px;
-    }
+    /* ── Find Group Panel (always visible in v2) ── */
     .find-group-panel {
-      display: none;
-      margin-top: 14px;
+      margin-top: 20px;
       background: var(--white);
       border: 1.5px solid var(--grey-light);
       border-radius: 10px;
       padding: 16px;
+    }
+    .find-group-heading {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--black);
+      margin-bottom: 4px;
+    }
+    .find-group-sub {
+      font-size: 13px;
+      color: var(--grey-mid);
+      margin-bottom: 12px;
     }
     .find-group-label {
       font-size: 13px;
@@ -702,18 +725,24 @@
     <h1 class="hero-title">FORGE</h1>
     <p class="hero-tagline">your pickleball <span class="accent">mettle.</span></p>
     <div class="hero-rule"></div>
-    <p class="hero-sub">Ratings that mean something. Analytics that stick.</p>
-    <p class="hero-body">Most groups play every week and have no idea if anyone is actually getting better. Forge gives your crew private DUPR-style ratings, session planning, and deep performance analytics — owned by your group, living in your Google Sheet, at zero cost.</p>
-    <p class="hero-footnote">Built for doubles group play of 4–50 who play to improve.</p>
-    <a href="https://forgepickle.github.io/app/?group=demo" class="btn-primary">▶ Try the demo</a>
-    <button class="btn-ghost" onclick="scrollToSetup()">Start your group — free</button>
+    <p class="hero-sub">Most groups play every week and have no idea if anyone is actually getting better.</p>
+    <p class="hero-body">Forge gives your crew private DUPR-style ratings, session planning, and deep performance analytics — in a Google Sheet your group owns, at zero cost.</p>
+    <p class="doubles-note">Designed for doubles group play &middot; 4&ndash;50 players &middot; Singles support not yet available</p>
 
-    <button class="find-group-toggle" onclick="toggleFindGroup()" id="findGroupToggle">
-      Already in a group? <span class="toggle-link">Find it →</span>
-    </button>
+    <a href="https://forgepickle.github.io/app/?group=demo" class="btn-primary">Try the demo</a>
+    <button class="btn-ghost" onclick="scrollToSetup()">Start your group — it's free</button>
 
+    <p class="friction-line">No account needed. No subscriptions.</p>
+    <div class="free-pills">
+      <span class="free-pill">Free forever</span>
+      <span class="free-pill">Your data</span>
+      <span class="free-pill">Your sheet</span>
+    </div>
+
+    <!-- Find Group Panel — always visible in v2 -->
     <div class="find-group-panel" id="findGroupPanel">
-      <label class="find-group-label" for="inputGroupId">Enter your Group ID</label>
+      <p class="find-group-heading">Already in a group?</p>
+      <p class="find-group-sub">Enter the 6-character Group ID your admin shared with you.</p>
       <div class="find-group-row">
         <input
           class="find-group-input"
@@ -728,7 +757,7 @@
           oninput="onGroupIdInput(this)"
           onkeydown="if(event.key==='Enter') goToGroup()"
         >
-        <button class="btn-find-go" onclick="goToGroup()">Go →</button>
+        <button class="btn-find-go" onclick="goToGroup()">Go &rarr;</button>
       </div>
       <p class="find-group-error" id="findGroupError"></p>
       <p class="find-group-hint" id="findGroupHint">6-character code — check the link your group admin shared with you.</p>
@@ -743,25 +772,25 @@
       <div class="feat-card featured">
         <span class="feat-icon">🔒</span>
         <p class="feat-title">Your data, your sheet</p>
-        <p class="feat-desc">Your group's data lives in a Google Sheet you own. No shared servers, no vendor lock-in. You control who sees it and what happens to it.</p>
+        <p class="feat-desc">Your group's data lives only in a Google Sheet you own — not on a shared server. Delete it, move it, or share it whenever you want. No lock-in, ever.</p>
       </div>
 
       <div class="feat-card">
         <span class="feat-icon">📊</span>
         <p class="feat-title">DUPR-style ratings</p>
-        <p class="feat-desc">Every match updates ratings using a DUPR-style Elo model with K-factor decay. Track improvement over time, see trends, and know exactly where you stand.</p>
+        <p class="feat-desc">Every match updates ratings using the same Elo model behind the pro rating system. Newer players rise faster; veterans need consistency to hold their rank. Track your trend over time and know exactly where you stand.</p>
       </div>
 
       <div class="feat-card">
         <span class="feat-icon">🏓</span>
         <p class="feat-title">Court planner + sessions</p>
-        <p class="feat-desc">Shuffle players into balanced or tiered courts for up to 10 rounds. Log match results live during your session from any phone.</p>
+        <p class="feat-desc">Shuffle players into balanced or tiered doubles courts for up to 10 rounds. Log match results live during your session from any phone.</p>
       </div>
 
       <div class="feat-card">
         <span class="feat-icon">⚡</span>
         <p class="feat-title">Forge Alpha analytics</p>
-        <p class="feat-desc">Attribution scoring, DNA radar, and performance corridor. Advanced metrics for players who want to understand their game at a deeper level.</p>
+        <p class="feat-desc">Advanced metrics that go beyond your rating. See which areas of your doubles game are weakest, track how your form shifts across sessions, and understand why your rating moves — not just that it did.</p>
       </div>
 
     </div>
@@ -770,11 +799,11 @@
   <!-- Section 3: Start your group -->
   <section id="sectionSetup">
     <p class="section-label">Get started</p>
-    <h2 class="setup-heading">Set up in ~15 minutes</h2>
+    <h2 class="setup-heading">Set up in 15 minutes</h2>
     <p class="setup-sub" style="margin-bottom:6px;">Three steps. Your group gets its own Google Sheet and backend — no shared data, no subscriptions, zero ongoing cost.</p>
     <div style="display:flex;align-items:flex-start;gap:10px;background:#FAEEDA;border:0.5px solid #FAC775;border-radius:8px;padding:10px 14px;margin-bottom:4px;">
       <span style="font-size:17px;line-height:1.4;flex-shrink:0;">⚠️</span>
-      <p style="margin:0;font-size:14px;font-weight:500;color:#633806;line-height:1.5;">Best done on a PC or laptop — the Apps Script setup in Step 2 is difficult on mobile.</p>
+      <p style="margin:0;font-size:14px;font-weight:500;color:#633806;line-height:1.5;">The backend deploy in Step 2 works best from a desktop browser. On mobile? <strong>Send this page to yourself</strong> and set up later.</p>
     </div>
 
     <!-- Step 1 -->
@@ -848,9 +877,9 @@
       </div>
 
       <div class="form-field">
-        <label class="form-label" for="inputGasUrl">GAS deployment URL</label>
+        <label class="form-label" for="inputGasUrl">Google Apps Script URL</label>
         <input class="form-input" type="url" id="inputGasUrl" placeholder="https://script.google.com/macros/s/..." autocomplete="off">
-        <p class="form-hint">Paste the Web app URL copied at the end of Step 2.</p>
+        <p class="form-hint">Paste the web app URL copied at the end of Step 2.</p>
       </div>
 
       <div class="form-field">
@@ -859,7 +888,7 @@
         <p class="form-hint">Used only to notify you of critical Forge updates. Never shared.</p>
       </div>
 
-      <button class="btn-primary" onclick="submitRegistration()" style="margin-top:8px;">Register my group</button>
+      <button class="btn-primary" onclick="submitRegistration()" style="margin-top:8px;">Create my group &rarr;</button>
     </div>
 
     <!-- Loading State -->
@@ -867,7 +896,7 @@
       <div class="loading-card">
         <div class="loading-spinner"></div>
         <p class="loading-title">Validating your setup...</p>
-        <p class="loading-sub">Checking your GAS deployment and sheet configuration.<br>This may take a moment if your backend is warming up.</p>
+        <p class="loading-sub">Checking your deployment and sheet configuration.<br>This may take a moment if your backend is warming up.</p>
       </div>
     </div>
 
@@ -1041,12 +1070,12 @@
     const gasUrl     = document.getElementById('inputGasUrl').value.trim();
     const adminEmail = document.getElementById('inputAdminEmail').value.trim();
 
-    if (!groupName)           { showFormError('Please enter a group name.'); return; }
-    if (groupName.length < 2) { showFormError('Group name must be at least 2 characters.'); return; }
+    if (!groupName)            { showFormError('Please enter a group name.'); return; }
+    if (groupName.length < 2)  { showFormError('Group name must be at least 2 characters.'); return; }
     if (groupName.length > 30) { showFormError('Group name must be 30 characters or fewer.'); return; }
-    if (!gasUrl)              { showFormError('Please paste your GAS deployment URL.'); return; }
+    if (!gasUrl)               { showFormError('Please paste your Google Apps Script deployment URL.'); return; }
     if (!gasUrl.startsWith('https://script.google.com/macros/s/')) {
-      showFormError('That does not look like a GAS deployment URL. It should start with https://script.google.com/macros/s/');
+      showFormError('That does not look like a valid deployment URL. It should start with https://script.google.com/macros/s/');
       return;
     }
     if (!adminEmail || !adminEmail.includes('@')) {
@@ -1111,20 +1140,6 @@
   // which uses Math.random().toString(36).substr(2, 6).toLowerCase()
   const GROUP_ID_RE = /^[a-z0-9]{6}$/;
 
-  function toggleFindGroup() {
-    const panel  = document.getElementById('findGroupPanel');
-    const toggle = document.getElementById('findGroupToggle');
-    const open   = panel.style.display === 'block';
-    panel.style.display = open ? 'none' : 'block';
-    if (!open) {
-      toggle.innerHTML = 'Already in a group? <span class="toggle-link">Hide ↑</span>';
-      document.getElementById('inputGroupId').focus();
-    } else {
-      toggle.innerHTML = 'Already in a group? <span class="toggle-link">Find it →</span>';
-      clearFindGroupError();
-    }
-  }
-
   // Strips any character that is not a–z or 0–9, and forces lowercase.
   // This runs on every keystroke so invalid characters are never accepted.
   function onGroupIdInput(el) {
@@ -1138,8 +1153,8 @@
     const errEl   = document.getElementById('findGroupError');
     const hintEl  = document.getElementById('findGroupHint');
     const inputEl = document.getElementById('inputGroupId');
-    errEl.textContent   = msg;
-    errEl.style.display = 'block';
+    errEl.textContent    = msg;
+    errEl.style.display  = 'block';
     hintEl.style.display = 'none';
     inputEl.classList.add('input-error');
   }
